@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMate - Homework Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-tasks"></i>
+                    <h1>TaskMate</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-view="dashboard">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </button>
+                    <button class="nav-btn" data-view="classes">
+                        <i class="fas fa-graduation-cap"></i>
+                        Classes
+                    </button>
+                    <button class="nav-btn" data-view="homework">
+                        <i class="fas fa-book"></i>
+                        Homework
+                    </button>
+                </nav>
+                <div class="user-menu">
+                    <div id="user-info" class="user-info hidden">
+                        <img id="user-avatar" class="user-avatar" src="" alt="User Avatar">
+                        <span id="user-name" class="user-name"></span>
+                        <button class="signout-btn" onclick="signOut()">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    <button id="signin-btn" class="signin-btn" onclick="signIn()">
+                        <i class="fab fa-google"></i>
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div class="view active" id="dashboard">
+                <div class="dashboard-header">
+                    <h2>Dashboard</h2>
+                    <p>Welcome back! Here's what's happening with your classes and homework.</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card upcoming-homework">
+                        <div class="card-header">
+                            <h3><i class="fas fa-clock"></i> Upcoming Deadlines</h3>
+                        </div>
+                        <div class="card-content" id="upcoming-homework-list">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card recent-classes">
+                        <div class="card-header">
+                            <h3><i class="fas fa-graduation-cap"></i> Recent Classes</h3>
+                        </div>
+                        <div class="card-content" id="recent-classes-list">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card quick-actions">
+                        <div class="card-header">
+                            <h3><i class="fas fa-plus"></i> Quick Actions</h3>
+                        </div>
+                        <div class="card-content">
+                            <button class="action-btn" onclick="showAddHomeworkModal()">
+                                <i class="fas fa-plus"></i>
+                                Add Homework
+                            </button>
+                            <button class="action-btn" onclick="showAddClassModal()">
+                                <i class="fas fa-graduation-cap"></i>
+                                Add Class
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classes View -->
+            <div class="view" id="classes">
+                <div class="view-header">
+                    <h2>Classes</h2>
+                    <button class="primary-btn" onclick="showAddClassModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Class
+                    </button>
+                </div>
+                
+                <div class="classes-grid" id="classes-grid">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading classes...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Homework View -->
+            <div class="view" id="homework">
+                <div class="view-header">
+                    <h2>Homework</h2>
+                    <div class="homework-filters">
+                        <select id="class-filter" class="filter-select">
+                            <option value="">All Classes</option>
+                        </select>
+                        <select id="status-filter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <button class="primary-btn" onclick="showAddHomeworkModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Homework
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="homework-list" id="homework-list">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading homework...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Class Modal -->
+    <div class="modal" id="add-class-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Class</h3>
+                <button class="close-btn" onclick="closeModal('add-class-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="add-class-form" class="modal-form">
+                <div class="form-group">
+                    <label for="class-name">Class Name</label>
+                    <input type="text" id="class-name" name="className" required>
+                </div>
+                <div class="form-group">
+                    <label for="class-location">Location</label>
+                    <input type="text" id="class-location" name="classLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="class-professor">Professor</label>
+                    <input type="text" id="class-professor" name="classProfessor" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="class-start-time">Start Time</label>
+                        <input type="time" id="class-start-time" name="classStartTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="class-end-time">End Time</label>
+                        <input type="time" id="class-end-time" name="classEndTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="class-color">Color</label>
+                    <input type="color" id="class-color" name="classColor" value="#3B82F6">
+                </div>
+                <div class="form-group">
+                    <label>Weekdays</label>
+                    <div class="weekday-checkboxes">
+                        <label class="weekday-checkbox">
+                            <input type="checkbox" name="weekdays" value="monday">
+                            <span>Mon</span>
+                        </label>
+                        <label class="weekday-checkbox">
+                            <input type="checkbox" name="weekdays" value="tuesday">
+                            <span>Tue</span>
+                        </label>
+                        <label class="weekday-checkbox">
+                            <input type="checkbox" name="weekdays" value="wednesday">
+                            <span>Wed</span>
+                        </label>
+                        <label class="weekday-checkbox">
+                            <input type="checkbox" name="weekdays" value="thursday">
+                            <span>Thu</span>
+                        </label>
+                        <label class="weekday-checkbox">
+                            <input type="checkbox" name="weekdays" value="friday">
+                            <span>Fri</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="secondary-btn" onclick="closeModal('add-class-modal')">Cancel</button>
+                    <button type="submit" class="primary-btn">Add Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Homework Modal -->
+    <div class="modal" id="add-homework-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Homework</h3>
+                <button class="close-btn" onclick="closeModal('add-homework-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="add-homework-form" class="modal-form">
+                <div class="form-group">
+                    <label for="homework-title">Title</label>
+                    <input type="text" id="homework-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="homework-class">Class</label>
+                    <select id="homework-class" name="classId" required>
+                        <option value="">Select a class</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="homework-description">Description</label>
+                    <textarea id="homework-description" name="description" rows="3" placeholder="Describe your homework assignment..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="homework-due-date">Due Date</label>
+                        <input type="date" id="homework-due-date" name="dueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="homework-priority">Priority</label>
+                        <select id="homework-priority" name="priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="secondary-btn" onclick="closeModal('add-homework-modal')">Cancel</button>
+                    <button type="submit" class="primary-btn">Add Homework</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Homework Modal -->
+    <div class="modal" id="edit-homework-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Homework</h3>
+                <button class="close-btn" onclick="closeModal('edit-homework-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="edit-homework-form" class="modal-form">
+                <input type="hidden" id="edit-homework-id" name="id">
+                <div class="form-group">
+                    <label for="edit-homework-title">Title</label>
+                    <input type="text" id="edit-homework-title" name="title" required>
+                </div>
+                <div class="formable">
+                    <label for="edit-homework-class">Class</label>
+                    <select id="edit-homework-class" name="classId" required>
+                        <option value="">Select a class</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-homework-description">Description</label>
+                    <textarea id="edit-homework-description" name="description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-homework-due-date">Due Date</label>
+                        <input type="date" id="edit-homework-due-date" name="dueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-homework-priority">Priority</label>
+                        <select id="edit-homework-priority" name="priority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-homework-status">Status</label>
+                    <select id="edit-homework-status" name="status">
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="secondary-btn" onclick="closeModal('edit-homework-modal')">Cancel</button>
+                    <button type="submit" class="primary-btn">Update Homework</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
